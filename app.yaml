@@ -1,0 +1,19 @@
+# app.yaml
+# Databricks App deployment config.
+#
+# PGHOST, PGPORT, PGDATABASE, PGUSER, PGSSLMODE, PGAPPNAME are injected
+# automatically by Databricks once you attach a Lakebase "Database"
+# resource to this app (App resources > + Add resource > Database) --
+# you do NOT need to (and can't) list them here.
+#
+# LAKEBASE_ENDPOINT is NOT auto-injected -- set it below to your actual
+# project/branch/endpoint path. Find these names in the Lakebase UI's
+# "Connect" dialog for your instance.
+
+command: ["python", "app.py"]
+
+env:
+  - name: LAKEBASE_ENDPOINT
+    value: "projects/project2-weather/branches/production/endpoints/primary"
+  - name: PORT
+    value: "8000"
