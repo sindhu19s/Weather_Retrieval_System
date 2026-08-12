@@ -1,0 +1,469 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Weather Intelligence Console</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0c1420;
+    --bg-panel: #121d2e;
+    --bg-panel-raised: #16243a;
+    --line: #24374f;
+    --text: #dce8f2;
+    --text-dim: #7b93ab;
+    --amber: #ffb627;
+    --cyan: #4fd1c5;
+    --cyan-dim: #2c6f68;
+    --danger: #ff6b5e;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    background-image:
+      radial-gradient(circle at 15% 8%, rgba(79, 209, 197, 0.06), transparent 40%),
+      radial-gradient(circle at 85% 92%, rgba(255, 182, 39, 0.05), transparent 45%);
+    color: var(--text);
+    font-family: 'Inter', system-ui, sans-serif;
+    min-height: 100vh;
+  }
+
+  .wrap {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 40px 24px 80px;
+  }
+
+  header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 20px;
+    margin-bottom: 32px;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .brand {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+  }
+
+  .brand-mark {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--cyan);
+    box-shadow: 0 0 0 3px rgba(79, 209, 197, 0.15);
+    position: relative;
+    top: -2px;
+  }
+
+  h1 {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700;
+    font-size: 19px;
+    letter-spacing: 0.02em;
+    margin: 0;
+  }
+
+  .subtitle {
+    color: var(--text-dim);
+    font-size: 13px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .status-pill {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--cyan);
+    border: 1px solid var(--cyan-dim);
+    padding: 4px 10px;
+    border-radius: 20px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  section.panel {
+    background: var(--bg-panel);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 22px 24px;
+    margin-bottom: 20px;
+  }
+
+  .panel-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+  }
+
+  .panel-head h2 {
+    font-size: 14px;
+    margin: 0;
+    font-family: 'JetBrains Mono', monospace;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-dim);
+  }
+
+  .panel-desc {
+    font-size: 13px;
+    color: var(--text-dim);
+    margin: -8px 0 18px;
+    line-height: 1.5;
+  }
+
+  .chip-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 18px;
+  }
+
+  .chip {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12.5px;
+    padding: 8px 14px;
+    border-radius: 6px;
+    border: 1px solid var(--line);
+    background: var(--bg-panel-raised);
+    color: var(--text-dim);
+    cursor: pointer;
+    transition: border-color 0.15s, color 0.15s;
+  }
+
+  .chip.selected {
+    border-color: var(--cyan);
+    color: var(--cyan);
+  }
+
+  .row {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  button {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    font-weight: 500;
+    padding: 10px 18px;
+    border-radius: 6px;
+    border: 1px solid var(--cyan-dim);
+    background: transparent;
+    color: var(--cyan);
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+  }
+
+  button:hover:not(:disabled) {
+    background: var(--cyan);
+    color: #06231f;
+  }
+
+  button:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  button.primary {
+    background: var(--cyan);
+    color: #06231f;
+  }
+
+  button.primary:hover:not(:disabled) {
+    background: #6fe0d4;
+  }
+
+  input[type="text"] {
+    flex: 1;
+    min-width: 220px;
+    background: var(--bg-panel-raised);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 10px 14px;
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+  }
+
+  input[type="text"]:focus {
+    outline: none;
+    border-color: var(--cyan);
+  }
+
+  .out {
+    margin-top: 14px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--text-dim);
+    white-space: pre-wrap;
+    min-height: 18px;
+  }
+
+  .out.busy::after {
+    content: 'running…';
+    color: var(--amber);
+  }
+
+  .result-card {
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 14px 16px;
+    margin-top: 12px;
+    background: var(--bg-panel-raised);
+  }
+
+  .result-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 12px;
+    margin-bottom: 8px;
+  }
+
+  .result-loc {
+    font-weight: 600;
+    font-size: 14px;
+  }
+
+  .result-headline {
+    color: var(--amber);
+    font-size: 12.5px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .result-sim {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--cyan);
+    white-space: nowrap;
+  }
+
+  .result-text {
+    font-size: 13px;
+    line-height: 1.55;
+    color: var(--text-dim);
+  }
+
+  .empty-state {
+    color: var(--text-dim);
+    font-size: 13px;
+    font-family: 'JetBrains Mono', monospace;
+    padding: 20px 0;
+    text-align: center;
+    border: 1px dashed var(--line);
+    border-radius: 8px;
+  }
+
+  footer {
+    text-align: center;
+    color: var(--text-dim);
+    font-size: 11px;
+    font-family: 'JetBrains Mono', monospace;
+    margin-top: 40px;
+    letter-spacing: 0.04em;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand">
+      <span class="brand-mark"></span>
+      <div>
+        <h1>WEATHER INTELLIGENCE</h1>
+        <div class="subtitle">nws harvest &rarr; pgvector &rarr; semantic search</div>
+      </div>
+    </div>
+    <span class="status-pill">lakebase / online</span>
+  </header>
+
+  <section class="panel">
+    <div class="panel-head"><h2>01 &mdash; Sync</h2></div>
+    <p class="panel-desc">Pull active alerts and forecast narratives from the National Weather Service for the selected locations.</p>
+    <div class="chip-row" id="locationChips"></div>
+    <div class="row">
+      <button class="primary" id="syncBtn">Sync selected locations</button>
+    </div>
+    <div class="out" id="syncOut"></div>
+  </section>
+
+  <section class="panel">
+    <div class="panel-head"><h2>02 &mdash; Embed</h2></div>
+    <p class="panel-desc">Chunk and vectorize any synced documents that don't have embeddings yet.</p>
+    <div class="row">
+      <button id="embedBtn">Embed new documents</button>
+    </div>
+    <div class="out" id="embedOut"></div>
+  </section>
+
+  <section class="panel">
+    <div class="panel-head"><h2>03 &mdash; Search</h2></div>
+    <p class="panel-desc">Semantic search over ingested weather documents, ranked by vector similarity.</p>
+    <div class="chip-row" id="sourceTypeChips"></div>
+    <div class="row" style="margin-bottom: 14px;">
+      <input type="text" id="searchInput" placeholder="e.g. flash flood risk this weekend">
+      <button class="primary" id="searchBtn">Search</button>
+    </div>
+    <div id="searchResults"></div>
+  </section>
+
+  <footer>DataExpert.io &middot; Databricks AI Bootcamp &middot; assignment 4938</footer>
+</div>
+
+<script>
+const LOCATIONS = [
+  "San Francisco, California",
+  "New York, New York",
+  "Salt Lake City, Utah",
+  "Chicago, Illinois",
+  "Miami, Florida"
+];
+
+const selected = new Set(LOCATIONS);
+const chipRow = document.getElementById('locationChips');
+
+LOCATIONS.forEach(loc => {
+  const chip = document.createElement('div');
+  chip.className = 'chip selected';
+  chip.textContent = loc;
+  chip.onclick = () => {
+    if (selected.has(loc)) {
+      selected.delete(loc);
+      chip.classList.remove('selected');
+    } else {
+      selected.add(loc);
+      chip.classList.add('selected');
+    }
+  };
+  chipRow.appendChild(chip);
+});
+
+async function postJSON(url, body) {
+  const resp = await fetch(url, {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify(body)
+  });
+  const data = await resp.json().catch(() => ({}));
+  if (!resp.ok) {
+    throw new Error(data.error || `Request failed (${resp.status})`);
+  }
+  return data;
+}
+
+const syncBtn = document.getElementById('syncBtn');
+const syncOut = document.getElementById('syncOut');
+syncBtn.onclick = async () => {
+  const locations = Array.from(selected);
+  if (locations.length === 0) {
+    syncOut.textContent = 'Select at least one location first.';
+    return;
+  }
+  syncBtn.disabled = true;
+  syncOut.classList.add('busy');
+  syncOut.textContent = '';
+  try {
+    const data = await postJSON('/weather/sync', {locations, limit: 50});
+    syncOut.textContent = `synced: ${data.synced} documents across ${data.locations.length} location(s)`;
+  } catch (e) {
+    syncOut.textContent = `error: ${e.message}`;
+  } finally {
+    syncBtn.disabled = false;
+    syncOut.classList.remove('busy');
+  }
+};
+
+const embedBtn = document.getElementById('embedBtn');
+const embedOut = document.getElementById('embedOut');
+embedBtn.onclick = async () => {
+  embedBtn.disabled = true;
+  embedOut.classList.add('busy');
+  embedOut.textContent = '';
+  try {
+    const data = await postJSON('/weather/embed', {limit: 500});
+    embedOut.textContent = `documents processed: ${data.documents_processed} · chunks embedded: ${data.chunks_embedded}`;
+  } catch (e) {
+    embedOut.textContent = `error: ${e.message}`;
+  } finally {
+    embedBtn.disabled = false;
+    embedOut.classList.remove('busy');
+  }
+};
+
+const SOURCE_TYPES = [
+  {label: 'All sources', value: null},
+  {label: 'Alerts only', value: 'alert'},
+  {label: 'Forecasts only', value: 'forecast'}
+];
+let selectedSourceType = null;
+const sourceChipRow = document.getElementById('sourceTypeChips');
+
+SOURCE_TYPES.forEach((opt, i) => {
+  const chip = document.createElement('div');
+  chip.className = 'chip' + (i === 0 ? ' selected' : '');
+  chip.textContent = opt.label;
+  chip.onclick = () => {
+    selectedSourceType = opt.value;
+    Array.from(sourceChipRow.children).forEach(c => c.classList.remove('selected'));
+    chip.classList.add('selected');
+  };
+  sourceChipRow.appendChild(chip);
+});
+
+const searchBtn = document.getElementById('searchBtn');
+const searchInput = document.getElementById('searchInput');
+const searchResults = document.getElementById('searchResults');
+
+async function runSearch() {
+  const query = searchInput.value.trim();
+  if (!query) return;
+  searchBtn.disabled = true;
+  searchResults.innerHTML = '<div class="empty-state">running…</div>';
+  try {
+    const data = await postJSON('/weather/search', {query, top_k: 5, source_type: selectedSourceType});
+    if (!data.results || data.results.length === 0) {
+      searchResults.innerHTML = '<div class="empty-state">no matches yet &mdash; try syncing and embedding first</div>';
+      return;
+    }
+    searchResults.innerHTML = '';
+    data.results.forEach(r => {
+      const card = document.createElement('div');
+      card.className = 'result-card';
+      const sim = (r.similarity * 100).toFixed(1);
+      card.innerHTML = `
+        <div class="result-head">
+          <div>
+            <div class="result-loc">${r.location} <span style="color: var(--text-dim); font-family: 'JetBrains Mono', monospace; font-size: 11px;">[${r.source_type}]</span></div>
+            <div class="result-headline">${r.headline || ''}</div>
+          </div>
+          <div class="result-sim">${sim}% match</div>
+        </div>
+        <div class="result-text">${r.chunk_text}</div>
+      `;
+      searchResults.appendChild(card);
+    });
+  } catch (e) {
+    searchResults.innerHTML = `<div class="empty-state">error: ${e.message}</div>`;
+  } finally {
+    searchBtn.disabled = false;
+  }
+}
+
+searchBtn.onclick = runSearch;
+searchInput.addEventListener('keydown', e => {
+  if (e.key === 'Enter') runSearch();
+});
+</script>
+</body>
+</html>
